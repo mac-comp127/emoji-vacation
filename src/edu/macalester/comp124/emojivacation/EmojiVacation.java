@@ -83,6 +83,23 @@ public class EmojiVacation {
             createEmoji(emojiX, baselineY - childSize, childSize);
             emojiX += childSize + spacing;
         }
+
+        // Solution to “random family ordering” challenge
+        // (replaces two for loops above):
+        /*
+        while(adults > 0 || children > 0) {
+            double size;
+            if(randomInt(0, adults + children - 1) < adults) {
+                size = adultSize;
+                adults--;
+            } else {
+                size = childSize;
+                children--;
+            }
+            createEmoji(emojiX, baselineY - size, size);
+            emojiX += size + spacing;
+        }
+        */
     }
 
     /**
