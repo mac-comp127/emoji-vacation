@@ -15,6 +15,7 @@ Tasks they should definitely do:
 - Copy their favorite emojis into this project
 - Make them repositionable (and resizable?)
 - Implement createVacation with variable adults and children
+- Make createVacation randomly select different emojis
 
 Tasks we might have them do, or might choose to provide for them:
 
