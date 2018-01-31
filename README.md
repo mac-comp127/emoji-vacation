@@ -20,6 +20,7 @@ Tasks we might have them do, or might choose to provide for them:
 
 - Implement createForest using existing createTree
 - Implement createMountains using existing createLayerOfMountains
+- Have forests and mountains only sometimes (using the percentChance helper)
 - Do the slide show while loop (they'll need pointers on removeAll and pause)
 
 Tasks that are probably optional challenges:
