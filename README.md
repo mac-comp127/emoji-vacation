@@ -14,15 +14,15 @@ Tasks they should definitely do:
 
 - Copy their favorite emojis into this project
 - Make them repositionable (and resizable?)
-- Implement createVacation with variable adults and children
-- Make createVacation randomly select different emojis
+- Implement createVacation with variable adults and children (looping, tricky b/c they have to rectify x positions across two loops)
+- Make createVacation randomly select different emojis (conditional)
 
-Tasks we might have them do, or might choose to provide for them:
+Tasks we might ask them to do just a few of; the rest we’d provide for them:
 
-- Implement createForest using existing createTree
-- Implement createMountains using existing createLayerOfMountains
-- Have forests and mountains only sometimes (using the percentChance helper)
-- Do the slide show while loop (they'll need pointers on removeAll and pause)
+- Implement createForest using existing createTree (loops)
+- Implement createMountains using existing createLayerOfMountains (loops, counting down, slightly trickier coord math)
+- Have forests and mountains only sometimes using the percentChance helper (conditionals)
+- Do the slide show while loop (they'll need hints on removeAll and pause)
 
 Tasks that are probably optional challenges:
 
