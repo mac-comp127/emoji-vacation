@@ -67,21 +67,28 @@ public class EmojiVacation {
             createForest(410, 50, randomInt(0, 30));
         }
 
+        createFamily(adults, children, 550);
+    }
+
+    private void createFamily(int adults, int children, double baselineY) {
+        double adultSize = 160, childSize = 90, spacing = 20;
+
         double emojiX = 60;
+
         for(int n = 0; n < adults; n++) {
-            createEmoji(emojiX, 390, 160);
-            emojiX += 190;
+            createEmoji(emojiX, baselineY - adultSize, adultSize);
+            emojiX += adultSize + spacing;
         }
         for(int n = 0; n < children; n++) {
-            createEmoji(emojiX, 460, 90);
-            emojiX += 110;
+            createEmoji(emojiX, baselineY - childSize, childSize);
+            emojiX += childSize + spacing;
         }
     }
 
     /**
      * Creates a emoji of a random type at the given position.
      */
-    private void createEmoji(double left, int top, int size) {
+    private void createEmoji(double left, double top, double size) {
         if(percentChance(20)) {
             createFrowny(left, top, size);
         } else {
