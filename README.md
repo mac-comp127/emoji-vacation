@@ -22,7 +22,7 @@ Tasks
 
 1. Look through existing code in the `EmojiVacation` class. Read the method signatures (the top line of a method declaring the name, return type, and parameters) to understand which methods are available and what they do. You do not need to understand in depth how they are actually implemented.
 2. Run the code and see what it produces. Notice that it draws no mountains or trees. Modify the `createVacation` method to draw mountains 50% of the time and trees 60% of the time.
-    - Hint: Look in the class for method that will help you make something happen a certain percent of the time.
+    - Hint: Look in the class for a method that will help you make something happen a certain percent of the time.
     - Hint: The scene can contain both mountains and trees, or just one, or neither.
 3. Copy the methods from your emoji method decomposition activity that you used to draw different emoji into the `EmojiVacation` class.
 4. If you defined the parameters to your methods correctly, then you should be able to draw emoji on different parts of your screen just by passing different values to the parameters when calling the methods. If not, modify your methods to make the emoji repositionable.
