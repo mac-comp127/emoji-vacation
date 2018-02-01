@@ -393,7 +393,7 @@ public class EmojiVacation {
     }
 
     /**
-     * Convenience to return true with the given percent change (0 = always false, 1 = always true).
+     * Convenience to return true with the given percent change (0 = always false, 100 = always true).
      */
     private boolean percentChance(double chance) {
         return random.nextDouble() * 100 < chance;
