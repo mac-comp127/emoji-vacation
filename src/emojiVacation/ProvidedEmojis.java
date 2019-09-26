@@ -6,7 +6,7 @@ import java.awt.Color;
 import java.util.List;
 
 @SuppressWarnings("WeakerAccess")
-public class StandardEmojis {
+public class ProvidedEmojis {
     private static final Color
         HEAD_COLOR = new Color(0xFFDE30),
         HEAD_OUTLINE_COLOR = new Color(0xAC9620),

@@ -99,15 +99,15 @@ public class EmojiVacation {
      */
     private static GraphicsGroup createRandomEmoji(double size) {
         if (percentChance(15)) {
-            return StandardEmojis.createFrownyFace(size);
+            return ProvidedEmojis.createFrownyFace(size);
         } else if (percentChance(3)) {
-            return StandardEmojis.createNauseousFace(size);
+            return ProvidedEmojis.createNauseousFace(size);
         } else if (percentChance(5)) {
-            return StandardEmojis.createWinkingFace(size);
+            return ProvidedEmojis.createWinkingFace(size);
         } else if (percentChance(15)) {
-            return StandardEmojis.createContentedFace(size);
+            return ProvidedEmojis.createContentedFace(size);
         } else {
-            return StandardEmojis.createSmileyFace(size);
+            return ProvidedEmojis.createSmileyFace(size);
         }
     }
 
