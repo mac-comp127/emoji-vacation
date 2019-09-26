@@ -1,4 +1,4 @@
-package edu.macalester.comp124.emojiVacation;
+package emojiVacation;
 
 import comp127graphics.*;
 

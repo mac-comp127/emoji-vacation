@@ -43,5 +43,5 @@ Optional Challenge Tasks
 1. Adjust your emoji methods to take into account the size parameter. You should be able to make the children smaller than the adults, as in the images above.
 2. Make the screen briefly go dark between scenes, to give a “slide projector” effect. (`NO_SLIDE_COLOR` is there to help you with this.)
 3. Add buildings or other new scenery that appears with a random chance.
-4. Make different times of day. (The moon is hard to draw with comp124graphics, but you could draw stars and change the sky color.)
+4. Make different times of day. (The moon is hard to draw with comp127graphics, but you could draw stars and change the sky color.)
 5. Modify the `createFamily` method to display the adults and children in a random order. Make sure to keep the correct numbers of adults and children!
