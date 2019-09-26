@@ -1,191 +1,127 @@
-package edu.macalester.comp124.emojivacation;
+package edu.macalester.comp124.emojiVacation;
+
+import comp127graphics.*;
 
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
-import comp124graphics.Arc;
-import comp124graphics.CanvasWindow;
-import comp124graphics.Ellipse;
-import comp124graphics.Line;
-import comp124graphics.Rectangle;
-import comp124graphics.Triangle;
-
+@SuppressWarnings("SameParameterValue")
 public class EmojiVacation {
     private static final Color
-        SUN_YELLOW = new Color(255, 255, 120),
-        SUN_BORDER_YELLOW = new Color(220, 220, 60),
-        SKY_BLUE = new Color(204, 217, 255),
-        CLOUD_COLOR = new Color(255, 255, 255, 128),
-        TREE_TRUNK_COLOR = new Color(85, 53, 17),
-        TREE_LEAVES_COLOR = new Color(23, 175, 19),
-        GRASS_COLOR = new Color(188, 218, 159),
-        MOUNTAIN_COLOR = new Color(118, 154, 254),
+        SUN_YELLOW = new Color(0xffff78),
+        SUN_BORDER_YELLOW = new Color(0xdcdc3c),
+        SKY_BLUE = new Color(0xccd9ff),
+        CLOUD_COLOR = new Color(0x80ffffff, true),
+        TREE_TRUNK_COLOR = new Color(0x553511),
+        TREE_LEAVES_COLOR = new Color(0x17af13),
+        GRASS_COLOR = new Color(0xbcda9f),
+        MOUNTAIN_COLOR = new Color(0x769afe),
+        NO_SLIDE_COLOR = new Color(0x22211a);
 
-        EMOJI_FACE_COLOR = new Color(255, 228, 51),
-        EMOJI_MOUTH_COLOR = new Color(120, 40, 45),
+    private static final int
+        SCENE_WIDTH = 800,
+        SCENE_HEIGHT = 600;
 
-        NO_SLIDE_COLOR = new Color(34, 33, 26);
-
-    private CanvasWindow canvas;
-    private Random random;
+    private static Random random = new Random();
 
     public static void main(String[] args) {
-        EmojiVacation emojiVacation = new EmojiVacation();
-        emojiVacation.doSlideShow();
+        CanvasWindow canvas = new CanvasWindow("Emoji Family Vacation", SCENE_WIDTH, SCENE_HEIGHT);
+        doSlideShow(canvas);
     }
 
-    public EmojiVacation() {
-        canvas = new CanvasWindow("Emoji Family Vacation", 800, 600);
-        random = new Random();
-    }
-
-    private void doSlideShow() {
-        while(true) {
-            createVacation(2, 3);
+    private static void doSlideShow(CanvasWindow canvas) {
+        //noinspection InfiniteLoopStatement
+        while (true) {
+            generateVacationPhoto(canvas, 2, 3);
+            canvas.draw();
             canvas.pause(3000);
 
             canvas.removeAll();
             canvas.setBackground(NO_SLIDE_COLOR);
+            canvas.draw();
             canvas.pause(200);
         }
     }
 
-    private void createVacation(int adults, int children) {
+    private static void generateVacationPhoto(CanvasWindow canvas, int adults, int children) {
         canvas.setBackground(randomColorVariation(SKY_BLUE, 8));
 
-        createSun(randomDouble(100, 700), randomDouble(60, 200), randomDouble(30, 50), randomInt(8, 24));
+        addSun(canvas);
 
-        createCloudRows();
+        addCloudRows(canvas);
 
-        if(percentChance(50)) {
-            createMountains(400, randomDouble(50, 300), randomInt(1, 5));
+        if (percentChance(50)) {
+            addMountains(canvas, 400, randomDouble(50, 300), randomInt(1, 5));
         }
 
-        createGround(400);
+        addGround(canvas, 400);
 
-        if(percentChance(60)) {
-            createForest(410, 50, randomInt(0, 30));
+        if (percentChance(60)) {
+            addForest(canvas, 410, 50, randomInt(0, 30));
         }
 
-        createFamily(adults, children, 550);
+        List<GraphicsGroup> family = createFamily(adults, children);
+        positionFamily(family, 60, 550, 20);
+        for (GraphicsGroup emoji : family) {
+            canvas.add(emoji);
+        }
     }
 
-    private void createFamily(int adults, int children, double baselineY) {
-        double adultSize = 160, childSize = 90, spacing = 20;
+    // –––––– Emoji family –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 
-        double emojiX = 60;
+    private static void positionFamily(
+            List<GraphicsGroup> family,
+            double leftX,
+            double baselineY,
+            double spacing
+    ) {
+        for (GraphicsGroup emoji : family) {
+            emoji.setPosition(leftX, baselineY - emoji.getHeight());
+            leftX += emoji.getWidth() + spacing;
+        }
+    }
 
-        for(int n = 0; n < adults; n++) {
-            createEmoji(emojiX, baselineY - adultSize, adultSize);
-            emojiX += adultSize + spacing;
-        }
-        for(int n = 0; n < children; n++) {
-            createEmoji(emojiX, baselineY - childSize, childSize);
-            emojiX += childSize + spacing;
-        }
+    private static List<GraphicsGroup> createFamily(int adults, int children) {
+        double adultSize = 160, childSize = 90;
 
-        // Solution to “random family ordering” challenge
-        // (replaces two for loops above):
-        /*
-        while(adults > 0 || children > 0) {
-            double size;
-            if(randomInt(0, adults + children - 1) < adults) {
-                size = adultSize;
-                adults--;
-            } else {
-                size = childSize;
-                children--;
-            }
-            createEmoji(emojiX, baselineY - size, size);
-            emojiX += size + spacing;
+        List<GraphicsGroup> emojis = new ArrayList<>();
+        for (int n = 0; n < adults + children; n++) {
+            double size = (n < adults) ? adultSize : childSize;
+            emojis.add(randomInt(0, emojis.size()), createRandomEmoji(size));
         }
-        */
+        return emojis;
     }
 
     /**
-     * Creates a emoji of a random type at the given position.
+     * Creates an emoji of a random type at the given position.
      */
-    private void createEmoji(double left, double top, double size) {
-        if(percentChance(20)) {
-            createFrowny(left, top, size);
+    private static GraphicsGroup createRandomEmoji(double size) {
+        if (percentChance(15)) {
+            return StandardEmojis.createFrownyFace(size);
+        } else if (percentChance(3)) {
+            return StandardEmojis.createNauseousFace(size);
+        } else if (percentChance(5)) {
+            return StandardEmojis.createWinkingFace(size);
+        } else if (percentChance(15)) {
+            return StandardEmojis.createContentedFace(size);
         } else {
-            createSmiley(left, top, size);
+            return StandardEmojis.createSmileyFace(size);
         }
     }
 
-    /**
-     * Creates a basic smiley face.
-     */
-    private void createSmiley(double left, double top, double size) {
-        Ellipse face = new Ellipse(left, top, size, size);
-        face.setStrokeColor(Color.BLACK);
-        face.setFillColor(EMOJI_FACE_COLOR);
-        face.setFilled(true);
-        canvas.add(face);
-
-        createStandardEyes(left, top, size);
-        createSmile(left + size * 0.2, top + size * 0.4, size * 0.6, size * 0.4);
-    }
-
-    private void createStandardEyes(double left, double top, double size) {
-        createEye(left + size * 0.33, top + size * 0.33, size * 0.06);
-        createEye(left + size * 0.67, top + size * 0.33, size * 0.06);
-    }
-
-    /**
-     * Creates a sad face.
-     */
-    private void createFrowny(double left, double top, double size) {
-        Ellipse face = new Ellipse(left, top, size, size);
-        face.setStrokeColor(Color.BLACK);
-        face.setFillColor(EMOJI_FACE_COLOR);
-        face.setFilled(true);
-        canvas.add(face);
-
-        createStandardEyes(left, top, size);
-        createFrown(left + size * 0.2, top + size * 0.6, size * 0.6, size * 0.4);
-    }
-
-    /**
-     * Creates a single eye-colored eye, centered at the given location.
-     */
-    private void createEye(double x, double y, double radius) {
-        Ellipse eye = new Ellipse(x - radius, y - radius, radius * 2, radius * 2);
-        eye.setFillColor(Color.BLACK);
-        eye.setFilled(true);
-        eye.setStroked(false);
-        canvas.add(eye);
-    }
-
-    /**
-     * Draws a smiling mouth, using an arc bounded by the given box.
-     */
-    private void createSmile(double top, double left, double width, double height) {
-        Arc mouth = new Arc(top, left, width, height, 200.0, 140.0);
-        mouth.setStrokeColor(EMOJI_MOUTH_COLOR);
-        mouth.setStrokeWidth(4);
-        canvas.add(mouth);
-    }
-
-    /**
-     * Draws a frowning mouth, using an arc bounded by the given box.
-     */
-    private void createFrown(double top, double left, double width, double height) {
-        Arc mouth = new Arc(top, left, width, height, 20.0, 140.0);
-        mouth.setStrokeColor(EMOJI_MOUTH_COLOR);
-        mouth.setStrokeWidth(4);
-        canvas.add(mouth);
-    }
+    // –––––– Scenery ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 
     /**
      * Fills the bottom of the screen with a solid color. Even emojis need to stand somewhere!
      *
      * @param horizonY The top of the “ground” rectangle.
      */
-    private void createGround(double horizonY) {
+    private static void addGround(CanvasWindow canvas, double horizonY) {
         Rectangle ground = new Rectangle(
             0, horizonY,
-            canvas.getWidth(), canvas.getHeight() - horizonY);
+            SCENE_WIDTH, SCENE_HEIGHT - horizonY);
         ground.setFillColor(randomColorVariation(GRASS_COLOR, 32));
         ground.setFilled(true);
         ground.setStroked(false);
@@ -199,37 +135,39 @@ public class EmojiVacation {
      * @param size   The height of each layer of mountains, and width of each triangle
      * @param layers The number of layers of mountain ranges to create
      */
-    private void createMountains(double baseY, double size, int layers) {
-        for(int layer = layers - 1; layer >= 0; layer--) {
-            createLayerOfMountains(baseY - layer * size * 0.2, size);
+    private static void addMountains(CanvasWindow canvas, double baseY, double size, int layers) {
+        for (int layer = layers - 1; layer >= 0; layer--) {
+            canvas.add(createLayerOfMountains(baseY - layer * size * 0.2, size));
         }
     }
 
     /**
      * Creates one layer of a mountain range.
-     *
      * @param layerBaseY The position of the feet of the mountains
      * @param size The maximum height of the peaks
      */
-    private void createLayerOfMountains(double layerBaseY, double size) {
+    private static GraphicsGroup createLayerOfMountains(double layerBaseY, double size) {
+        GraphicsGroup group = new GraphicsGroup();
+
         double layerLeft = randomDouble(-size, 0);
-        double layerRight = canvas.getWidth() + size;
+        double layerRight = SCENE_WIDTH + size;
         Color layerColor = randomColorVariation(MOUNTAIN_COLOR, 16);
 
         double x = layerLeft;
-        while(x < layerRight) {
+        while (x < layerRight) {
             double curHeight = randomDouble(size * 0.4, size),
-                   curWidth = curHeight * randomDouble(1.0, 1.6);
-            Triangle peak = new Triangle(
+                curWidth = curHeight * randomDouble(1.0, 1.6);
+            Polygon peak = Polygon.makeTriangle(
                 x - curWidth, layerBaseY,
                 x, layerBaseY - curHeight,
                 x + curWidth, layerBaseY);
             peak.setFillColor(layerColor);
             peak.setFilled(true);
             peak.setStroked(false);
-            canvas.add(peak);
+            group.add(peak);
             x += curWidth * 0.5;
         }
+        return group;
     }
 
     /**
@@ -239,48 +177,61 @@ public class EmojiVacation {
      * @param ySpan Vertical distance spanned by the tree trunks’ bases
      * @param count Number of trees
      */
-    private void createForest(double baseY, double ySpan, int count) {
-        for(int n = 0; n < count; n++) {
-            createTree(randomDouble(0, canvas.getWidth()), baseY + n * ySpan / count, 80, 90);
+    private static void addForest(CanvasWindow canvas, double baseY, double ySpan, int count) {
+        for (int n = 0; n < count; n++) {
+            GraphicsGroup tree = createTree(80, 90);
+            tree.setPosition(
+                randomDouble(0, SCENE_WIDTH),
+                baseY + n * ySpan / count);
+            canvas.add(tree);
         }
     }
 
     /**
      * Creates a tree with a brown trunk and idyllic green leaves.
      *
-     * @param centerX      The horizontal center of the trunk
-     * @param baseY        The vertical position of the base of the trunk
      * @param trunkHeight  The distance from the trunk’s base to the center of the leaves
      * @param leavesSize   The width and height of the cluster of leaves
      */
-    private void createTree(double centerX, double baseY, double trunkHeight, double leavesSize) {
+    private static GraphicsGroup createTree(double trunkHeight, double leavesSize) {
+        GraphicsGroup group = new GraphicsGroup();
+
         Color trunkColor = randomColorVariation(TREE_TRUNK_COLOR, 8);
         double trunkWidth = trunkHeight * 0.2;
 
         Rectangle trunk = new Rectangle(
-            centerX - trunkWidth / 2, baseY - trunkHeight,
+            -trunkWidth / 2, -trunkHeight,
             trunkWidth, trunkHeight);
         trunk.setFillColor(trunkColor);
         trunk.setFilled(true);
         trunk.setStroked(false);
-        canvas.add(trunk);
+        group.add(trunk);
 
         // A little roundness at the bottom of the trunk
         double baseEllipseHeight = trunkWidth * 0.25;
         Ellipse trunkBase = new Ellipse(
-            centerX - trunkWidth / 2, baseY - baseEllipseHeight / 2,
+            -trunkWidth / 2, -baseEllipseHeight / 2,
             trunkWidth, baseEllipseHeight);
         trunkBase.setFillColor(trunkColor);
         trunkBase.setFilled(true);
         trunkBase.setStroked(false);
-        canvas.add(trunkBase);
+        group.add(trunkBase);
 
-        createPuffs(
-            centerX, baseY - trunkHeight,
+        GraphicsGroup treeTop = createPuff(
             leavesSize, leavesSize,
             false,
             leavesSize * 0.2,
             randomColorVariation(TREE_LEAVES_COLOR, 16));
+        treeTop.setPosition(0, -trunkHeight);
+        group.add(treeTop);
+
+        return group;
+    }
+
+    private static void addSun(CanvasWindow canvas) {
+        GraphicsGroup sun = createSun(randomDouble(30, 50), randomInt(8, 24));
+        sun.setCenter(randomDouble(100, 700), randomDouble(60, 200));
+        canvas.add(sun);
     }
 
     /**
@@ -289,98 +240,112 @@ public class EmojiVacation {
      * @param radius   Radius of the sun’s inner circle, not including rays.
      * @param rayCount The number of rays emanating from the sun. May be 0.
      */
-    private void createSun(double centerX, double centerY, double radius, int rayCount) {
-        Ellipse sun = new Ellipse(
-            centerX - radius, centerY - radius,
-            radius * 2, radius * 2);
-        sun.setFillColor(SUN_YELLOW);
-        sun.setFilled(true);
-        sun.setStrokeColor(SUN_BORDER_YELLOW);
-        sun.setStrokeWidth(3);
-        canvas.add(sun);
+    private static GraphicsGroup createSun(double radius, int rayCount) {
+        GraphicsGroup sun = new GraphicsGroup();
 
-        createSunRays(centerX, centerY, radius * 1.2, radius * 1.4, rayCount);
+        Ellipse sunCenter = new Ellipse(
+            -radius, -radius,
+            radius * 2, radius * 2);
+        sunCenter.setFillColor(SUN_YELLOW);
+        sunCenter.setFilled(true);
+        sunCenter.setStrokeColor(SUN_BORDER_YELLOW);
+        sunCenter.setStrokeWidth(3);
+        sun.add(sunCenter);
+
+        addSunRays(sun, radius * 1.2, radius * 1.4, rayCount);
+        return sun;
     }
 
     /**
-     * Draws the rays around the sun.
+     * Draws the rays around the sun. Adds the rays to the given graphics group.
      */
-    private void createSunRays(double centerX, double centerY, double innerRadius, double outerRadius, int rayCount) {
-        for(int n = 0; n < rayCount; n++) {
+    private static void addSunRays(
+            GraphicsGroup sun,
+            double innerRadius,
+            double outerRadius,
+            int rayCount
+    ) {
+        for (int n = 0; n < rayCount; n++) {
             double theta = Math.PI * 2 * n / rayCount;
             double dx = Math.cos(theta),
                    dy = Math.sin(theta);
             Line ray = new Line(
-                centerX + dx * innerRadius, centerY + dy * innerRadius,
-                centerX + dx * outerRadius, centerY + dy * outerRadius);
+                dx * innerRadius, dy * innerRadius,
+                dx * outerRadius, dy * outerRadius);
             ray.setStrokeWidth(3);
             ray.setStrokeColor(SUN_YELLOW);
-            canvas.add(ray);
+            sun.add(ray);
         }
     }
 
     /**
      * Creates clouds of a random size and puffiness, spaced in neat rows and scattered horizontally.
      */
-    private void createCloudRows() {
+    private static void addCloudRows(CanvasWindow canvas) {
         double cloudRowSize = randomDouble(20, 120);
         double cloudPuffSize = randomDouble(20, 40);
-        for(double y = 0; y < canvas.getHeight(); y += cloudRowSize) {
-            createPuffs(
-                randomDouble(0, 800), y,
+        for (double y = 0; y < SCENE_HEIGHT; y += cloudRowSize) {
+            GraphicsGroup cloud = createPuff(
                 randomDouble(100, 200), cloudRowSize * 0.6,
                 true,
                 cloudPuffSize,
                 CLOUD_COLOR);
+            cloud.setPosition(randomDouble(0, 800), y);
+            canvas.add(cloud);
         }
     }
 
     /**
-     * Adds a clump of circular puffs. Useful for clouds and treetops.
+     * Creates a clump of overlapping circles. Useful for clouds and treetops.
      *
-     * @param centerX    The midpoint of the whole cloud
-     * @param baselineY  The y-coordinate of the midpoints of the puffs that make up the bottom edge
+     * The whole puff is centered horizontally at x=0, and the “baseline” of the puff is at y=0
+     * (see the flatBottom parameter).
+     *
      * @param width      The approximate width (with random variation) spanned by the centers of the
      *                   cloud’s puffs. This does not include the size of the individual puffs.
      * @param height     The approximate extent of the puff centers above the cloud’s baseline
      * @param flatBottom True = semicircle (with bottom on baseline);
      *                   false = full circle (centered on baseline)
      * @param puffSize   The size of circles that make up the cloud, with random variation.
+     * @return           A group containing the whole puff.
      */
-    private void createPuffs(
-            double centerX, double baselineY,
+    private static GraphicsGroup createPuff(
             double width, double height,
             boolean flatBottom,
             double puffSize,
-            Color puffColor) {
-
+            Color puffColor
+    ) {
+        GraphicsGroup group = new GraphicsGroup();
         double maxTheta;
-        if(flatBottom) {
+        if (flatBottom) {
             maxTheta = Math.PI;
         } else {
             maxTheta = Math.PI * 2;
         }
         double puffDensity = 0.3;
         int puffCount = (int) Math.ceil(Math.PI * width * height / puffSize * puffDensity);
-        for(int puffNum = 0; puffNum < puffCount; puffNum++) {
+        for (int puffNum = 0; puffNum < puffCount; puffNum++) {
             double theta = randomDouble(0, maxTheta);
             double r = randomDouble(0, 1);
             double curPuffSize = puffSize * randomDouble(0.5, 1.5);
             Ellipse puff = new Ellipse(
-                centerX   - curPuffSize / 2 + Math.cos(theta) * r * width / 2,
-                baselineY - curPuffSize / 2 - Math.sin(theta) * r * height / 2,
+                -curPuffSize / 2 + Math.cos(theta) * r * width / 2,
+                -curPuffSize / 2 - Math.sin(theta) * r * height / 2,
                 curPuffSize, curPuffSize);
             puff.setFillColor(randomColorVariation(puffColor, 3));
             puff.setFilled(true);
             puff.setStroked(false);
-            canvas.add(puff);
+            group.add(puff);
         }
+        return group;
     }
+
+    // –––––– Randomness helpers –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 
     /**
      * Convenience to return a random floating point number, min ≤ n < max.
      */
-    private double randomDouble(double min, double max) {
+    private static double randomDouble(double min, double max) {
         return random.nextDouble() * (max - min) + min;
     }
 
@@ -388,22 +353,22 @@ public class EmojiVacation {
      * Convenience to return a random integer, min ≤ n ≤ max.
      * Note that max is inclusive.
      */
-    private int randomInt(int min, int max) {
+    private static int randomInt(int min, int max) {
         return random.nextInt(max - min + 1) + min;
     }
 
     /**
      * Convenience to return true with the given percent change (0 = always false, 100 = always true).
      */
-    private boolean percentChance(double chance) {
+    private static boolean percentChance(double chance) {
         return random.nextDouble() * 100 < chance;
     }
 
     /**
-     * Returns a slightly different color than the given one. Useful for making a bunch of items not look
-     * entirely identical.
+     * Returns a slightly different color than the given one. Useful for making a bunch of items not
+     * look entirely identical.
      */
-    private Color randomColorVariation(Color color, int amount) {
+    private static Color randomColorVariation(Color color, int amount) {
         return new Color(
             colorChannelVariation(color.getRed(), amount),
             colorChannelVariation(color.getGreen(), amount),
@@ -414,7 +379,7 @@ public class EmojiVacation {
     /**
      * Varies the given value randomly, pinned to [0...255].
      */
-    private int colorChannelVariation(int c, int amount) {
+    private static int colorChannelVariation(int c, int amount) {
         return Math.min(255, Math.max(0, c + randomInt(-amount, amount)));
     }
 }
