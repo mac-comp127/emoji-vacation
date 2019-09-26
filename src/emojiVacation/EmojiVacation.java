@@ -34,7 +34,7 @@ public class EmojiVacation {
     private static void doSlideShow(CanvasWindow canvas) {
         //noinspection InfiniteLoopStatement
         while (true) {
-            generateVacationPhoto(canvas, 2, 3);
+            generateVacationPhoto(canvas);
             canvas.draw();
             canvas.pause(3000);
 
@@ -45,7 +45,7 @@ public class EmojiVacation {
         }
     }
 
-    private static void generateVacationPhoto(CanvasWindow canvas, int adults, int children) {
+    private static void generateVacationPhoto(CanvasWindow canvas) {
         canvas.setBackground(randomColorVariation(SKY_BLUE, 8));
 
         addSun(canvas);
@@ -62,7 +62,7 @@ public class EmojiVacation {
             addForest(canvas, 410, 50, randomInt(0, 30));
         }
 
-        List<GraphicsGroup> family = createFamily(adults, children);
+        List<GraphicsGroup> family = createFamily(2, 3);
         positionFamily(family, 60, 550, 20);
         for (GraphicsGroup emoji : family) {
             canvas.add(emoji);
@@ -71,32 +71,17 @@ public class EmojiVacation {
 
     // –––––– Emoji family –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 
-    private static void positionFamily(
-            List<GraphicsGroup> family,
-            double leftX,
-            double baselineY,
-            double spacing
-    ) {
-        for (GraphicsGroup emoji : family) {
-            emoji.setPosition(leftX, baselineY - emoji.getHeight());
-            leftX += emoji.getWidth() + spacing;
-        }
-    }
-
-    private static List<GraphicsGroup> createFamily(int adults, int children) {
+    private static List<GraphicsGroup> createFamily(int adultCount, int childCount) {
         double adultSize = 160, childSize = 90;
 
         List<GraphicsGroup> emojis = new ArrayList<>();
-        for (int n = 0; n < adults + children; n++) {
-            double size = (n < adults) ? adultSize : childSize;
+        for (int n = 0; n < adultCount + childCount; n++) {
+            double size = (n < adultCount) ? adultSize : childSize;
             emojis.add(randomInt(0, emojis.size()), createRandomEmoji(size));
         }
         return emojis;
     }
 
-    /**
-     * Creates an emoji of a random type at the given position.
-     */
     private static GraphicsGroup createRandomEmoji(double size) {
         if (percentChance(15)) {
             return ProvidedEmojis.createFrownyFace(size);
@@ -108,6 +93,18 @@ public class EmojiVacation {
             return ProvidedEmojis.createContentedFace(size);
         } else {
             return ProvidedEmojis.createSmileyFace(size);
+        }
+    }
+
+    private static void positionFamily(
+            List<GraphicsGroup> family,
+            double leftX,
+            double baselineY,
+            double spacing
+    ) {
+        for (GraphicsGroup emoji : family) {
+            emoji.setPosition(leftX, baselineY - emoji.getHeight());
+            leftX += emoji.getWidth() + spacing;
         }
     }
 
