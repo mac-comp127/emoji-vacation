@@ -149,7 +149,7 @@ public class EmojiVacation {
         while (x < layerRight) {
             double curHeight = randomDouble(size * 0.4, size),
                 curWidth = curHeight * randomDouble(1.0, 1.6);
-            Polygon peak = Polygon.makeTriangle(
+            Path peak = Path.makeTriangle(
                 x - curWidth, layerBaseY,
                 x, layerBaseY - curHeight,
                 x + curWidth, layerBaseY);
