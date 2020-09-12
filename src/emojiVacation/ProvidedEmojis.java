@@ -1,6 +1,6 @@
 package emojiVacation;
 
-import comp127graphics.*;
+import edu.macalester.graphics.*;
 
 import java.awt.Color;
 import java.util.List;
