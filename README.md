@@ -13,7 +13,7 @@ You start this lab with an existing project, which gives you some nice building 
 Setup
 ---
 
-Please carefully follow the **COMP 127 Homework / Lab Procedure** on Moodle. Don’t miss any steps!
+Please carefully follow the [**COMP 127 Homework / Take-Home Exercise Procedure**](https://comp127.innig.net/resources/take-home-procedure/). Don’t miss any steps!
 
 Tasks
 ---
